@@ -69,7 +69,7 @@ python segment_anything_annotator.py --onnx-model-path sam_onnx.onnx --dataset-p
 | `k`：调低透明度 | `l`：调高透明度 | `n`：添加对象   |
 | `r`：重置       | `Ctrl+s`：保存  |                 |
 
-![image](assets\catdog.gif)
+![image](.assets/catdog.gif)
 
 最后生成的标注文件为`coco`格式，保存在`<dataset_path>/annotations.json`。
 
