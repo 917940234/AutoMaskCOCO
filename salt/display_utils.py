@@ -44,9 +44,9 @@ class DisplayUtils:
         text = '{} {}'.format(ann["id"],categories[ann["category_id"]])
         txt_color = (0, 0, 0) if np.mean(color) > 127 else (255, 255, 255)
         font = cv2.FONT_HERSHEY_SIMPLEX
-        txt_size = cv2.getTextSize(text, font, 0.4, 1)[0]
+        txt_size = cv2.getTextSize(text, font, 1.5, 1)[0]
         cv2.rectangle(image, (x, y + 1), (x + txt_size[0] + 1, y + int(1.5*txt_size[1])), color, -1)
-        cv2.putText(image, text, (x, y + txt_size[1]), font, 0.4, txt_color, thickness=1)
+        cv2.putText(image, text, (x, y + txt_size[1]), font, 1.5, txt_color, thickness=5)
         return image
 
     def draw_annotations(self, image, categories, annotations, colors):
