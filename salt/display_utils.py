@@ -36,15 +36,22 @@ class DisplayUtils:
         mask = np.logical_not(mask)
         return mask
 
-    def draw_box_on_image(self, image, ann, color):
+    def draw_box_on_image(self, image, categories, ann, color):
         x, y, w, h = ann["bbox"]
         x, y, w, h = int(x), int(y), int(w), int(h)
         image = cv2.rectangle(image, (x, y), (x + w, y + h), color, self.box_width)
+
+        text = '{} {}'.format(ann["id"],categories[ann["category_id"]])
+        txt_color = (0, 0, 0) if np.mean(color) > 127 else (255, 255, 255)
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        txt_size = cv2.getTextSize(text, font, 0.4, 1)[0]
+        cv2.rectangle(image, (x, y + 1), (x + txt_size[0] + 1, y + int(1.5*txt_size[1])), color, -1)
+        cv2.putText(image, text, (x, y + txt_size[1]), font, 0.4, txt_color, thickness=1)
         return image
 
-    def draw_annotations(self, image, annotations, colors):
+    def draw_annotations(self, image, categories, annotations, colors):
         for ann, color in zip(annotations, colors):
-            image = self.draw_box_on_image(image, ann, color)
+            image = self.draw_box_on_image(image, categories, ann, color)
             mask = self.__convert_ann_to_mask(ann, image.shape[0], image.shape[1])
             image = self.overlay_mask_on_image(image, mask, color)
         return image
