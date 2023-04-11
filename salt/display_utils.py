@@ -4,8 +4,8 @@ from pycocotools import mask as coco_mask
 
 class DisplayUtils:
     def __init__(self):
-        self.transparency = 0.65
-        self.box_width = 1
+        self.transparency = 0.3
+        self.box_width = 2
 
     def increase_transparency(self):
         self.transparency = min(1.0, self.transparency + 0.05)
