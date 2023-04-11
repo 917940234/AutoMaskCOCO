@@ -10,7 +10,7 @@ from salt.interface import ApplicationInterface
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--onnx-model-path", type=str, default="models/sam_onnx.onnx")
+    parser.add_argument("--onnx-model-path", type=str, default="sam_onnx.onnx")
     parser.add_argument("--dataset-path", type=str, default="dataset")
     parser.add_argument("--categories", type=str)
     args = parser.parse_args()
