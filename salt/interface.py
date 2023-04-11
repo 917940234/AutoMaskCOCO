@@ -2,7 +2,7 @@ import cv2
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QGraphicsView, QGraphicsScene
 from PyQt5.QtGui import QImage, QPixmap, QPainter, QWheelEvent, QMouseEvent
 from PyQt5.QtCore import Qt, QRectF
-from PyQt5.QtWidgets import QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QLabel
+from PyQt5.QtWidgets import QPushButton, QRadioButton, QVBoxLayout, QHBoxLayout, QWidget, QLabel
 
 class CustomGraphicsView(QGraphicsView):
     def __init__(self, editor):
@@ -83,7 +83,7 @@ class ApplicationInterface(QWidget):
         
         self.main_window = QHBoxLayout()
         
-        self.graphics_view = CustomGraphicsView(editor)
+        self.graphics_view = CustomGraphicsView(self.editor)
         self.main_window.addWidget(self.graphics_view)
 
         self.panel = self.get_side_panel()
@@ -131,14 +131,14 @@ class ApplicationInterface(QWidget):
         button_layout = QHBoxLayout(top_bar)
         self.layout.addLayout(button_layout)
         buttons = [
-            ("Add", lambda: self.add()),
-            ("Reset", lambda: self.reset()),
-            ("Prev", lambda: self.prev_image()),
-            ("Next", lambda: self.next_image()),
-            ("Toggle", lambda: self.toggle()),
-            ("Transparency Up", lambda: self.transparency_up()),
-            ("Transparency Down", lambda: self.transparency_down()),
-            ("Save", lambda: self.save_all()), 
+            ("添加对象", lambda: self.add()),
+            ("重置", lambda: self.reset()),
+            ("前一张", lambda: self.prev_image()),
+            ("下一张", lambda: self.next_image()),
+            ("显示已标注信息", lambda: self.toggle()),
+            ("调高透明度", lambda: self.transparency_up()),
+            ("调低透明度", lambda: self.transparency_down()),
+            ("保存", lambda: self.save_all()), 
         ]
         for button, lmb in buttons:
             bt = QPushButton(button)
@@ -152,8 +152,13 @@ class ApplicationInterface(QWidget):
         panel_layout = QVBoxLayout(panel)
         categories = self.editor.get_categories()
         for category in categories:
-            label = QPushButton(category)
-            label.clicked.connect(lambda: self.editor.select_category(category))
+            # label = QPushButton(category)
+            # label.clicked.connect(lambda: self.editor.select_category(category))
+            # panel_layout.addWidget(label)
+
+            label = QRadioButton(category)
+            # sender传入点击的字符
+            label.toggled.connect(lambda: self.editor.select_category(self.sender().text()))
             panel_layout.addWidget(label)
         return panel
 
