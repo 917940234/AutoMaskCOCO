@@ -81,7 +81,7 @@ class Editor:
         anns, colors = self.dataset_explorer.get_annotations(
             self.image_id, return_colors=True
         )
-        self.display = self.du.draw_annotations(self.display, anns, colors)
+        self.display = self.du.draw_annotations(self.display, self.categories, anns, colors)
 
     def reset(self, hard=True):
         self.curr_inputs.reset_inputs()
