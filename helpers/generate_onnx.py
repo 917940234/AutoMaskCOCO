@@ -15,7 +15,8 @@ import warnings
 import os, shutil
 import argparse
 
-def main(checkpoint, model_type, onnx_model_path, orig_im_size, opset_version, quantize = True):
+
+def main(checkpoint, model_type, onnx_model_path, orig_im_size, opset_version, quantize=True):
     sam = sam_model_registry[model_type](checkpoint=checkpoint)
 
     onnx_model = SamOnnxModel(sam, return_single_mask=True)
@@ -68,8 +69,8 @@ def main(checkpoint, model_type, onnx_model_path, orig_im_size, opset_version, q
         )
         os.remove(temp_model_path)
 
-if __name__ == "__main__":
 
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--checkpoint-path", type=str, default="./sam_vit_h_4b8939.pth")
     parser.add_argument("--model_type", type=str, default="default")

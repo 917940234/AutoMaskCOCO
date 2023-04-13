@@ -1,116 +1,71 @@
-# SAM-Labelimg
-利用Segment Anything(SAM)模型进行快速标注
+# SAM标注快速入门指南
 
-#### 1.下载项目
+本指南提供了如何使用SAM（Segment Anything Model）标注工具的简要说明。通过以下步骤，您可以轻松地将您的图像数据集转换为COCO格式的标注。
 
-项目1：https://github.com/zhouayi/SAM-Tool
-
-项目2：https://github.com/facebookresearch/segment-anything
-
-```bash
+## 准备工作
+1.  克隆相关项目：
+```shell
 git clone https://github.com/zhouayi/SAM-Tool.git
-
 git clone https://github.com/facebookresearch/segment-anything.git
-cd segment-anything
-pip install -e .
+```
+2.  下载预训练的SAM模型：[sam_vit_h_4b8939.pth](https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth) 并将其放入`segment-anything`项目主目录。
+3.  准备数据集：将图像放置在`<dataset_path>/images/`中，并在`<dataset_path>`下创建名为`embeddings`的空文件夹。
+4.  将`SAM-Tool`项目中的`helpers`文件夹复制到`segment-anything`项目的主目录。
+5.  安装环境：
+```shell
+conda install pytorch==1.12.1 torchvision==0.13.1 torchaudio==0.12.1 cudatoolkit=11.6 -c pytorch -c conda-forge
 ```
 
-下载`SAM`模型：https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth
-
-#### 2.把数据放置在`<dataset_path>/images/*`这样的路径中，并创建空文件夹`<dataset_path>/embeddings`
-
-#### 3.将项目1中的`helpers`文件夹复制到项目2的主目录下
-
-##### 3.1 运行`extrac_embeddings.py`文件来提取图片的`embedding`
-
-```bash
-# cd到项目2的主目录下
-python helpers\extract_embeddings.py --checkpoint-path sam_vit_h_4b8939.pth --dataset-folder <dataset_path> --device cpu
+## 提取图像Embeddings
+运行`extract_embeddings.py`脚本以提取图像的embeddings：
+```shell
+python helpers\extract_embeddings.py --checkpoint-path sam_vit_h_4b8939.pth --dataset-folder <dataset_path>
 ```
+参数说明：
+-   `checkpoint-path`：预训练SAM模型的路径。
+-   `dataset-folder`：数据集路径。
+-   `device`：默认为`cuda`，如无GPU，可使用`cpu`（速度较慢）。
+运行完成后，`<dataset_path>/embeddings`文件夹下会生成相应的npy文件。
 
-- `checkpoint-path`：上面下载好的`SAM`模型路径
-- `dataset-folder`：数据路径
-- `device`：默认`cuda`，没有`GPU`用`cpu`也行的，就是速度挺慢的
-
-运行完毕后，`<dataset_path>/embeddings`下会生成相应的npy文件
-
-##### 3.2 运行`generate_onnx.py`将`pth`文件转换为`onnx`模型文件
-
-```bash
-# cd到项目2的主目录下
+## 转换模型格式
+使用`generate_onnx.py`脚本将`.pth`文件转换为`.onnx`模型文件：
+```shell
 python helpers\generate_onnx.py --checkpoint-path sam_vit_h_4b8939.pth --onnx-model-path ./sam_onnx.onnx --orig-im-size 1080 1920
 ```
+参数说明：
+-   `checkpoint-path`：预训练SAM模型的路径。
+-   `onnx-model-path`：导出的`.onnx`模型保存路径。
+-   `orig-im-size`：数据集中图像的尺寸（height, width）。
+**注意：** 生成的`.onnx`模型不支持动态输入大小。如果数据集中的图像尺寸不一致，可以使用不同的`orig-im-size`参数导出多个`.onnx`模型供后续使用。
 
-- `checkpoint-path`：同样的`SAM`模型路径
-
-- `onnx-model-path`：得到的`onnx`模型保存路径
-
-- `orig-im-size`：数据中图片的尺寸大小`（height, width）`
-
-【**注意：提供给的代码转换得到的`onnx`模型并不支持动态输入大小，所以如果你的数据集中图片尺寸不一，那么可选方案是以不同的`orig-im-size`参数导出不同的`onnx`模型供后续使用**】
-
-#### 4.将生成的`sam_onnx.onnx`模型复制到项目1的主目录下，运行`segment_anything_annotator.py`进行标注
-
-```bash
-# cd到项目1的主目录下
+## 标注图像
+将生成的`sam_onnx.onnx`模型复制到`SAM-Tool`项目主目录，然后运行`segment_anything_annotator.py`进行标注：
+```shell
 python segment_anything_annotator.py --onnx-model-path sam_onnx.onnx --dataset-path <dataset_path> --categories cat,dog
 ```
+参数说明：
+-   `onnx-model-path`：导出的`.onnx`模型路径。
+-   `dataset-path`：数据集路径。
+-   `categories`：数据集的类别（每个类别以`,`分割，不要有空格）。
+在对象位置点击鼠标左键添加掩码，点击右键去掉该位置掩码。最后生成的标注文件为COCO格式，保存在`<dataset_path>/annotations.json`。
 
-- `onnx-model-path`：导出的`onnx`模型路径
-- `dataset-path`：数据路径
-- `categories`：数据集的类别（每个类别以`,`分割，不要有空格）
-
-在对象位置出点击鼠标左键为增加掩码，点击右键为去掉该位置掩码。
-
-其他使用快捷键有：
-
-| `Esc`：退出app  | `a`：前一张图片 | `d`：下一张图片 |
-| :-------------- | :-------------- | :-------------- |
-| `k`：调低透明度 | `l`：调高透明度 | `n`：添加对象   |
-| `r`：重置       | `Ctrl+s`：保存  |                 |
-
-![image](assets/catdog.gif)
-
-最后生成的标注文件为`coco`格式，保存在`<dataset_path>/annotations.json`。
-
-#### 5.检查标注结果
-```bash
+## 查看标注结果
+在`SAM-Tool`项目中运行`cocoviewer.py`查看全部的标注结果：
+```shell
 python cocoviewer.py -i <dataset_path> -a <dataset_path>\annotations.json
 ```
-![image](assets/catdog.png)
-#### 6.其他
 
-- [ ] 修改标注框线条的宽度的代码位置
+## 自定义设置
+1.  修改标注框线条宽度： 在`salt/display_utils.py`中，找到`class DisplayUtils`，修改`self.box_width`的值。
+2.  修改标注文本格式： 在`salt/display_utils.py`中，找到`def draw_box_on_image`函数，修改`text`、`txt_color`、`font`等参数。
+3.  标注快捷键：
+    -   `Esc`：退出app
+    -   `a`：前一张图片
+    -   `d`：下一张图片
+    -   `k`：调低透明度
+    -   `l`：调高透明度
+    -   `n`：添加对象
+    -   `r`：重置
+    -   `Ctrl+s`：保存
 
-```python
-# salt/displat_utils.py
-class DisplayUtils:
-    def __init__(self):
-        self.transparency = 0.65 # 默认的掩码透明度
-        self.box_width = 2 # 默认的边界框线条宽度
-```
-
-- [ ] 修改标注文本的格式的代码位置
-
-```python
-# salt/displat_utils.py
-def draw_box_on_image(self, image, categories, ann, color):
-    x, y, w, h = ann["bbox"]
-    x, y, w, h = int(x), int(y), int(w), int(h)
-    image = cv2.rectangle(image, (x, y), (x + w, y + h), color, self.box_width)
-
-    text = '{} {}'.format(ann["id"],categories[ann["category_id"]])
-    txt_color = (0, 0, 0) if np.mean(color) > 127 else (255, 255, 255)
-    font = cv2.FONT_HERSHEY_SIMPLEX
-    txt_size = cv2.getTextSize(text, font, 1.5, 1)[0]
-    cv2.rectangle(image, (x, y + 1), (x + txt_size[0] + 1, y + int(1.5*txt_size[1])), color, -1)
-    cv2.putText(image, text, (x, y + txt_size[1]), font, 1.5, txt_color, thickness=5)
-    return image
-```
-
-## Reference
-https://github.com/facebookresearch/segment-anything 
-
-https://github.com/anuragxel/salt
-
-https://github.com/trsvchn/coco-viewer
+通过以上步骤，可以使用SAM标注工具为您的图像数据集生成COCO格式的标注。如有需要，可以根据自己的需求调整设置以优化标注过程。

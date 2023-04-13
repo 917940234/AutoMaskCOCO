@@ -10,6 +10,7 @@ from tqdm import tqdm
 import numpy as np
 from segment_anything import sam_model_registry, SamPredictor
 
+
 def main(checkpoint_path, model_type, device, images_folder, embeddings_folder):
     sam = sam_model_registry[model_type](checkpoint=checkpoint_path)
     sam.to(device=device)
@@ -20,13 +21,13 @@ def main(checkpoint_path, model_type, device, images_folder, embeddings_folder):
         image = cv2.imread(image_path)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-
         predictor.set_image(image)
 
         image_embedding = predictor.get_image_embedding().cpu().numpy()
 
         out_path = os.path.join(embeddings_folder, os.path.splitext(image_name)[0] + ".npy")
         np.save(out_path, image_embedding)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
