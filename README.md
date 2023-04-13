@@ -73,7 +73,12 @@ python segment_anything_annotator.py --onnx-model-path sam_onnx.onnx --dataset-p
 
 最后生成的标注文件为`coco`格式，保存在`<dataset_path>/annotations.json`。
 
-#### 5.其他
+#### 5.检查标注结果
+```bash
+python cocoviewer.py -i <dataset_path> -a <dataset_path>\annotations.json
+```
+![image](assets/catdog.png)
+#### 6.其他
 
 - [ ] 修改标注框线条的宽度的代码位置
 
@@ -107,3 +112,5 @@ def draw_box_on_image(self, image, categories, ann, color):
 https://github.com/facebookresearch/segment-anything 
 
 https://github.com/anuragxel/salt
+
+https://github.com/trsvchn/coco-viewer
