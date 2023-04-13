@@ -2,14 +2,15 @@ import cv2
 import numpy as np
 from pycocotools import mask as coco_mask
 
+
 class DisplayUtils:
     def __init__(self):
-        self.transparency = 0.3
-        self.box_width = 2
+        self.transparency = 0.7
+        self.box_width = 1
 
     def increase_transparency(self):
         self.transparency = min(1.0, self.transparency + 0.05)
-    
+
     def decrease_transparency(self):
         self.transparency = max(0.0, self.transparency - 0.05)
 
@@ -41,12 +42,16 @@ class DisplayUtils:
         x, y, w, h = int(x), int(y), int(w), int(h)
         image = cv2.rectangle(image, (x, y), (x + w, y + h), color, self.box_width)
 
-        text = '{} {}'.format(ann["id"],categories[ann["category_id"]])
+        text = '{} {}'.format(ann["id"], categories[ann["category_id"]])
         txt_color = (0, 0, 0) if np.mean(color) > 127 else (255, 255, 255)
         font = cv2.FONT_HERSHEY_SIMPLEX
-        txt_size = cv2.getTextSize(text, font, 1.5, 1)[0]
-        cv2.rectangle(image, (x, y + 1), (x + txt_size[0] + 1, y + int(1.5*txt_size[1])), color, -1)
-        cv2.putText(image, text, (x, y + txt_size[1]), font, 1.5, txt_color, thickness=5)
+
+        # 更改此值以调整文字大小
+        font_scale = 0.3  # 例如，将其更改为 1.0 以使文字更小
+
+        txt_size = cv2.getTextSize(text, font, font_scale, 1)[0]
+        cv2.rectangle(image, (x, y + 1), (x + txt_size[0] + 1, y + int(1.5 * txt_size[1])), color, -1)
+        cv2.putText(image, text, (x, y + txt_size[1]), font, font_scale, txt_color, thickness=1)
         return image
 
     def draw_annotations(self, image, categories, annotations, colors):
@@ -57,7 +62,7 @@ class DisplayUtils:
         return image
 
     def draw_points(
-        self, image, points, labels, colors={1: (0, 255, 0), 0: (0, 0, 255)}, radius=5
+            self, image, points, labels, colors={1: (0, 255, 0), 0: (0, 0, 255)}, radius=2
     ):
         for i in range(points.shape[0]):
             point = points[i, :]
