@@ -136,6 +136,30 @@ class Editor:
         self.display = self.image_bgr.copy()
         self.reset()
 
+    def next_ten_image(self):
+        if self.image_id == self.dataset_explorer.get_num_images() - 1:
+            return
+        self.image_id += 10
+        (
+            self.image,
+            self.image_bgr,
+            self.image_embedding,
+        ) = self.dataset_explorer.get_image_data(self.image_id)
+        self.display = self.image_bgr.copy()
+        self.reset()
+
+    def prev_ten_image(self):
+        if self.image_id == 0:
+            return
+        self.image_id -= 10
+        (
+            self.image,
+            self.image_bgr,
+            self.image_embedding,
+        ) = self.dataset_explorer.get_image_data(self.image_id)
+        self.display = self.image_bgr.copy()
+        self.reset()
+
     def next_category(self):
         if self.category_id == len(self.categories) - 1:
             self.category_id = 0

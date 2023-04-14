@@ -61,11 +61,14 @@ python cocoviewer.py -i <dataset_path> -a <dataset_path>\annotations.json
 3.  标注快捷键：
     -   `Esc`：退出app
     -   `a`：前一张图片
-    -   `d`：下一张图片
+    -   `d`：后一张图片
+    -   `a`：前十张图片
+    -   `d`：后十张图片
     -   `k`：调低透明度
     -   `l`：调高透明度
     -   `n`：添加对象
     -   `r`：重置
-    -   `Ctrl+s`：保存
+    -   `Ctrl+s`：保存之前的操作
+    -   `Ctrl+z`：撤销对象
 
 通过以上步骤，可以使用SAM标注工具为您的图像数据集生成COCO格式的标注。如有需要，可以根据自己的需求调整设置以优化标注过程。

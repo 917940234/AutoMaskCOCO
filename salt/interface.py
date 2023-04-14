@@ -116,6 +116,14 @@ class ApplicationInterface(QWidget):
         self.editor.prev_image()
         self.graphics_view.imshow(self.editor.display)    
 
+    def next_ten_image(self):
+        self.editor.next_ten_image()
+        self.graphics_view.imshow(self.editor.display)
+
+    def prev_ten_image(self):
+        self.editor.prev_ten_image()
+        self.graphics_view.imshow(self.editor.display)
+
     def toggle(self):
         self.editor.toggle()
         self.graphics_view.imshow(self.editor.display)    
@@ -140,6 +148,8 @@ class ApplicationInterface(QWidget):
             ("重置", lambda: self.reset()),
             ("前一张", lambda: self.prev_image()),
             ("下一张", lambda: self.next_image()),
+            ("向前十张", lambda: self.prev_ten_image()),
+            ("向后十张", lambda: self.next_ten_image()),
             ("显示已标注信息", lambda: self.toggle()),
             ("调高透明度", lambda: self.transparency_up()),
             ("调低透明度", lambda: self.transparency_down()),
@@ -174,6 +184,10 @@ class ApplicationInterface(QWidget):
             self.prev_image()
         if event.key() == Qt.Key_D:
             self.next_image()
+        if event.modifiers() == Qt.ControlModifier and event.key() == Qt.Key_A:
+            self.prev_ten_image()
+        if event.modifiers() == Qt.ControlModifier and event.key() == Qt.Key_D:
+            self.next_ten_image()
         if event.key() == Qt.Key_K:
             self.transparency_down()
         if event.key() == Qt.Key_L:

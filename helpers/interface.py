@@ -129,6 +129,14 @@ class ApplicationInterface(QWidget):
         self.editor.prev_image()
         self.graphics_view.imshow(self.editor.display)
 
+    def next_ten_image(self):
+        self.editor.next_ten_image()
+        self.graphics_view.imshow(self.editor.display)
+
+    def prev_ten_image(self):
+        self.editor.prev_ten_image()
+        self.graphics_view.imshow(self.editor.display)
+
     def toggle(self):
         self.editor.toggle()
         self.graphics_view.imshow(self.editor.display)
