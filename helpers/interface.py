@@ -1,8 +1,23 @@
 import cv2
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QGraphicsView, QGraphicsScene
+from PyQt5.QtWidgets import (
+    QWidget,
+    QVBoxLayout,
+    QLabel,
+    QGraphicsView,
+    QGraphicsScene,
+    QApplication,
+)
 from PyQt5.QtGui import QImage, QPixmap, QPainter, QWheelEvent, QMouseEvent
 from PyQt5.QtCore import Qt, QRectF
-from PyQt5.QtWidgets import QPushButton, QRadioButton, QVBoxLayout, QHBoxLayout, QWidget, QLabel
+from PyQt5.QtWidgets import (
+    QPushButton,
+    QVBoxLayout,
+    QHBoxLayout,
+    QWidget,
+    QLabel,
+    QRadioButton,
+)
+
 
 class CustomGraphicsView(QGraphicsView):
     def __init__(self, editor):
@@ -33,27 +48,30 @@ class CustomGraphicsView(QGraphicsView):
         pixmap = QPixmap.fromImage(q_img)
         if self.image_item:
             self.image_item.setPixmap(pixmap)
+            self.setSceneRect(QRectF(pixmap.rect()))
         else:
             self.image_item = self.scene.addPixmap(pixmap)
             self.setSceneRect(QRectF(pixmap.rect()))
 
     def wheelEvent(self, event: QWheelEvent):
-        zoom_in_factor = 1.25
-        zoom_out_factor = 1 / zoom_in_factor
-        old_pos = self.mapToScene(event.pos())
-        if event.angleDelta().y() > 0:
-            zoom_factor = zoom_in_factor
+        modifiers = QApplication.keyboardModifiers()
+        if modifiers == Qt.ControlModifier:
+            adj = (event.angleDelta().y() / 120) * 0.1
+            self.scale(1 + adj, 1 + adj)
         else:
-            zoom_factor = zoom_out_factor
-        self.scale(zoom_factor, zoom_factor)
-        new_pos = self.mapToScene(event.pos())
-        delta = new_pos - old_pos
-        self.translate(delta.x(), delta.y())
-    
+            delta_y = event.angleDelta().y()
+            delta_x = event.angleDelta().x()
+            x = self.horizontalScrollBar().value()
+            self.horizontalScrollBar().setValue(x - delta_x)
+            y = self.verticalScrollBar().value()
+            self.verticalScrollBar().setValue(y - delta_y)
+
     def imshow(self, img):
         height, width, channel = img.shape
         bytes_per_line = 3 * width
-        q_img = QImage(img.data, width, height, bytes_per_line, QImage.Format_RGB888).rgbSwapped()
+        q_img = QImage(
+            img.data, width, height, bytes_per_line, QImage.Format_RGB888
+        ).rgbSwapped()
         self.set_image(q_img)
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
@@ -63,10 +81,11 @@ class CustomGraphicsView(QGraphicsView):
         if event.button() == Qt.LeftButton:
             label = 1
         elif event.button() == Qt.RightButton:
-            label = 0        
+            label = 0
         self.editor.add_click([int(x), int(y)], label)
         self.imshow(self.editor.display)
-    
+
+
 class ApplicationInterface(QWidget):
     def __init__(self, app, editor, panel_size=(1920, 1080)):
         super(ApplicationInterface, self).__init__()
@@ -80,10 +99,9 @@ class ApplicationInterface(QWidget):
         self.top_bar = self.get_top_bar()
         self.layout.addWidget(self.top_bar)
 
-        
         self.main_window = QHBoxLayout()
-        
-        self.graphics_view = CustomGraphicsView(self.editor)
+
+        self.graphics_view = CustomGraphicsView(editor)
         self.main_window.addWidget(self.graphics_view)
 
         self.panel = self.get_side_panel()
@@ -93,32 +111,27 @@ class ApplicationInterface(QWidget):
         self.setLayout(self.layout)
 
         self.graphics_view.imshow(self.editor.display)
-    
+
     def reset(self):
         self.editor.reset()
-        self.graphics_view.imshow(self.editor.display)    
+        self.graphics_view.imshow(self.editor.display)
 
     def add(self):
         self.editor.save_ann()
-        self.editor.reset()
-        self.graphics_view.imshow(self.editor.display)    
-
-    def delet(self):
-        self.editor.delet_ann()
         self.editor.reset()
         self.graphics_view.imshow(self.editor.display)
 
     def next_image(self):
         self.editor.next_image()
-        self.graphics_view.imshow(self.editor.display)    
+        self.graphics_view.imshow(self.editor.display)
 
     def prev_image(self):
         self.editor.prev_image()
-        self.graphics_view.imshow(self.editor.display)    
+        self.graphics_view.imshow(self.editor.display)
 
     def toggle(self):
         self.editor.toggle()
-        self.graphics_view.imshow(self.editor.display)    
+        self.graphics_view.imshow(self.editor.display)
 
     def transparency_up(self):
         self.editor.step_up_transparency()
@@ -127,7 +140,7 @@ class ApplicationInterface(QWidget):
     def transparency_down(self):
         self.editor.step_down_transparency()
         self.graphics_view.imshow(self.editor.display)
-    
+
     def save_all(self):
         self.editor.save()
 
@@ -136,14 +149,14 @@ class ApplicationInterface(QWidget):
         button_layout = QHBoxLayout(top_bar)
         self.layout.addLayout(button_layout)
         buttons = [
-            ("添加对象", lambda: self.add()),
-            ("重置", lambda: self.reset()),
-            ("前一张", lambda: self.prev_image()),
-            ("下一张", lambda: self.next_image()),
-            ("显示已标注信息", lambda: self.toggle()),
-            ("调高透明度", lambda: self.transparency_up()),
-            ("调低透明度", lambda: self.transparency_down()),
-            ("保存", lambda: self.save_all()), 
+            ("Add", lambda: self.add()),
+            ("Reset", lambda: self.reset()),
+            ("Prev", lambda: self.prev_image()),
+            ("Next", lambda: self.next_image()),
+            ("Toggle", lambda: self.toggle()),
+            ("Transparency Up", lambda: self.transparency_up()),
+            ("Transparency Down", lambda: self.transparency_down()),
+            ("Save", lambda: self.save_all()),
         ]
         for button, lmb in buttons:
             bt = QPushButton(button)
@@ -155,16 +168,17 @@ class ApplicationInterface(QWidget):
     def get_side_panel(self):
         panel = QWidget()
         panel_layout = QVBoxLayout(panel)
-        categories = self.editor.get_categories()
-        for category in categories:
-            # label = QPushButton(category)
-            # label.clicked.connect(lambda: self.editor.select_category(category))
-            # panel_layout.addWidget(label)
-
-            label = QRadioButton(category)
-            # sender传入点击的字符
-            label.toggled.connect(lambda: self.editor.select_category(self.sender().text()))
-            panel_layout.addWidget(label)
+        categories, colors = self.editor.get_categories(get_colors=True)
+        label_array = []
+        for i, _ in enumerate(categories):
+            label_array.append(QRadioButton(categories[i]))
+            label_array[i].clicked.connect(
+                lambda state, x=categories[i]: self.editor.select_category(x)
+            )
+            label_array[i].setStyleSheet(
+                "background-color: rgba({},{},{},0.6)".format(*colors[i][::-1])
+            )
+            panel_layout.addWidget(label_array[i])
         return panel
 
     def keyPressEvent(self, event):
@@ -184,8 +198,6 @@ class ApplicationInterface(QWidget):
             self.reset()
         if event.modifiers() == Qt.ControlModifier and event.key() == Qt.Key_S:
             self.save_all()
-        if event.modifiers() == Qt.ControlModifier and event.key() == Qt.Key_Z:
-            self.delet()
         # elif event.key() == Qt.Key_Space:
         #     # Do something if the space bar is pressed
         #     pass

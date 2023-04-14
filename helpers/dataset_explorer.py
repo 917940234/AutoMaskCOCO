@@ -134,7 +134,9 @@ class DatasetExplorer:
     def get_colors(self, category_id):
         return self.category_colors[category_id]
     
-    def get_categories(self):
+    def get_categories(self, get_colors=False):
+        if get_colors:
+            return self.categories, self.category_colors
         return self.categories
 
     def get_num_images(self):
@@ -160,9 +162,6 @@ class DatasetExplorer:
             self.annotations_by_image_id[image_id] = []
         self.annotations_by_image_id[image_id].append(annotation)
 
-    def __delet_to_our_annotation_dict(self, image_id):
-        self.annotations_by_image_id[image_id].pop(-1)
-
     def get_annotations(self, image_id, return_colors=False):
         if image_id not in self.annotations_by_image_id:
             return [], []
@@ -181,11 +180,6 @@ class DatasetExplorer:
         self.__add_to_our_annotation_dict(annotation)
         self.coco_json["annotations"].append(annotation)
         self.global_annotation_id += 1
-
-    def delet_annotation(self, image_id):
-        self.__delet_to_our_annotation_dict(image_id)
-        self.coco_json["annotations"].pop(-1)
-        self.global_annotation_id -= 1
 
     def save_annotation(self):
         with open(self.coco_json_path, "w") as f:
