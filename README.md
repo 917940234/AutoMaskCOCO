@@ -1,11 +1,24 @@
-# SAM标注快速入门指南
+# AutoMaskCOCO
 
-本指南提供了如何使用SAM（Segment Anything Model）标注工具的简要说明。通过以下步骤，您可以轻松地将您的图像数据集转换为COCO格式的标注。
+AutoMaskCOCO是一个简单易用的图像分割工具，它结合了**Segment Anything**、**COCO Viewer**和**Segment Anything Labelling Tool (SALT)** 三个开源项目的优势，为用户提供了一个自动生成掩码并创建COCO数据集的一站式解决方案。通过这个项目，我们旨在简化图像标注和数据集管理的过程，为计算机视觉研究人员和开发者节省宝贵的时间。
+
+- **Segment Anything**为AutoMaskCOCO提供了灵活的分割功能。
+- **COCO Viewer**项目为AutoMaskCOCO带来了一个直观的界面，方便用户查看和管理COCO数据集，对图像和标注进行有效的检查。
+- **Segment Anything Labelling Tool (SALT)** 为AutoMaskCOCO提供了一个用户友好的标注界面，让用户能够轻松地对图像进行分割、标注和编辑。
+
+AutoMaskCOCO项目利用标点自动生成掩码，降低了图像分割数据标注的难度，同时还可以自动输出COCO数据集格式的结果，为计算机视觉任务的数据准备工作提供便利，值得一试。
+
+## 示例
+![How it Works Gif!](assets/how-it-works.gif)
+
+![Panel Jpg!](assets/panel.jpg)
+
+![COCOViewerPanel Jpg!](assets/COCOViewerpanel.png)
 
 ## 准备工作
 1.  克隆相关项目：
 ```shell
-git clone https://github.com/zhouayi/SAM-Tool.git
+git clone https://github.com/917940234/SAM-Tool.git
 git clone https://github.com/facebookresearch/segment-anything.git
 ```
 2.  下载预训练的SAM模型：[sam_vit_h_4b8939.pth](https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth) 并将其放入`segment-anything`项目主目录。
