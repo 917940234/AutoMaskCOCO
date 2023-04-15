@@ -1,12 +1,12 @@
 # AutoMaskCOCO
 
-AutoMaskCOCO是一个简单易用的图像分割工具，它结合了**Segment Anything**、**COCO Viewer**和**Segment Anything Labelling Tool (SALT)** 三个开源项目的优势，为用户提供了一个自动生成掩码并创建COCO数据集的一站式解决方案。通过这个项目，我们旨在简化图像标注和数据集管理的过程，为计算机视觉研究人员和开发者节省宝贵的时间。
+AutoMaskCOCO是一个简单易用的图像分割数据集标注工具，它结合了**Segment Anything**、**COCO Viewer**和**Segment Anything Labelling Tool (SALT)** 三个开源项目的优势，为用户提供了一个自动生成掩码并创建COCO数据集的一站式解决方案。通过这个项目，我们旨在简化图像分割和数据集标注的过程，为计算机视觉研究人员和开发者节省宝贵的时间。
 
-- **Segment Anything**为AutoMaskCOCO提供了灵活的分割功能。
+- **Segment Anything**为AutoMaskCOCO提供了灵活的分割和掩码功能。
 - **COCO Viewer**项目为AutoMaskCOCO带来了一个直观的界面，方便用户查看和管理COCO数据集，对图像和标注进行有效的检查。
 - **Segment Anything Labelling Tool (SALT)** 为AutoMaskCOCO提供了一个用户友好的标注界面，让用户能够轻松地对图像进行分割、标注和编辑。
 
-AutoMaskCOCO项目利用标点自动生成掩码，降低了图像分割数据标注的难度，同时还可以自动输出COCO数据集格式的结果，为计算机视觉任务的数据准备工作提供便利，值得一试。
+AutoMaskCOCO项目利用标点自动生成掩码，降低了图像分割数据标注的难度，同时还可以自动输出COCO数据集格式的结果，为计算机视觉任务的数据准备工作提供便利。
 
 ## 示例
 ![How it Works Gif!](assets/how-it-works.gif)
